@@ -1,0 +1,45 @@
+{
+  "productos": [
+    {
+      "id": 1,
+      "nombre": "Oso Teddy",
+      "precio": 15.99,
+      "categoria": "Amigurumis",
+      "descripcion": "Oso tejido a mano con lana hipoalergénica, relleno suave y ojos de seguridad. Aprox. 20 cm.",
+      "imagen": "/static/images/oso.jpg",
+      "colores": ["marrón", "beige", "gris"],
+      "accesorios": [
+        { "nombre": "Lazo rojo", "precio_extra": 1.5 },
+        { "nombre": "Gorro de lana", "precio_extra": 2.0 }
+      ],
+      "stock": 5,
+      "estado": "disponible"
+    },
+    {
+      "id": 2,
+      "nombre": "Conejita Nube",
+      "precio": 17.5,
+      "categoria": "Amigurumis",
+      "descripcion": "Conejita de crochet en algodón orgánico, ideal para bebés. Aprox. 22 cm.",
+      "imagen": "/static/images/conejo.jpg",
+      "colores": ["crema", "rosa"],
+      "accesorios": [
+        { "nombre": "Zanahoria tejida", "precio_extra": 1.0 }
+      ],
+      "stock": 3,
+      "estado": "disponible"
+    },
+    {
+      "id": 3,
+      "nombre": "Llavero Corazón",
+      "precio": 6.0,
+      "categoria": "Llaveros",
+      "descripcion": "Llavero de corazón tejido en degradado rosa con argolla metálica.",
+      "imagen": "/static/images/corazon.jpg",
+      "colores": [],
+      "accesorios": [],
+      "stock": 12,
+      "estado": "bajo_pedido"
+    }
+  ]
+}
