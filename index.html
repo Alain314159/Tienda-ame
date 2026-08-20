@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Tienda de Crochet y Amigurumis</title>
+  <meta name="description" content="Amigurumis y accesorios de crochet hechos a mano. Pide por WhatsApp.">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fdf2f8">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#030712">
+
+  <!-- Tema ANTES de pintar (evita parpadeo) -->
+  <script>
+    (function () {
+      var t = localStorage.getItem('theme');
+      if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      if (t === 'dark') document.documentElement.classList.add('dark');
+    })();
+  </script>
+
+  <!-- Tailwind por CDN (única opción sin compilar; aceptable para este tamaño) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { colors: { brand: {
+        50:'#fdf2f8',100:'#fce7f3',200:'#fbcfe8',300:'#f9a8d4',
+        400:'#f472b6',500:'#ec4899',600:'#db2777',700:'#be185d' } } } }
+    };
+  </script>
+
+  <link rel="stylesheet" href="css/custom.css">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script defer src="https://unpkg.com/alpinejs@3/dist/cdn.min.js"></script>
+</head>
+
+<body class="bg-rose-50/60 dark:bg-gray-950 text-gray-800 dark:text-gray-100 antialiased min-h-screen">
+<div x-data="tiendaApp()" x-init="init()">
+
+  <!-- ===== HEADER STICKY ===== -->
+  <header class="sticky top-0 z-40 backdrop-blur bg-white/85 dark:bg-gray-900/85 border-b border-brand-100 dark:border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 pt-3 pb-2 flex items-center gap-2">
+      <span class="text-brand-500"><i data-lucide="heart-handshake" class="w-6 h-6"></i></span>
+      <h1 class="font-extrabold text-lg truncate" x-text="config.store_name">Mi Tienda</h1>
+      <div class="ml-auto flex items-center gap-1">
+        <button @click="abrirCarrito()" class="relative p-2 rounded-xl hover:bg-brand-50 dark:hover:bg-gray-800" aria-label="Abrir carrito">
+          <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+          <span x-show="cartCount() > 0" x-cloak x-text="cartCount()"
+            class="absolute -top-1 -right-1 bg-brand-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] grid place-items-center px-1"></span>
+        </button>
+        <button @click="toggleTheme()" class="p-2 rounded-xl hover:bg-brand-50 dark:hover:bg-gray-800" aria-label="Cambiar tema claro/oscuro">
+          <span x-show="tema === 'light'"><i data-lucide="moon" class="w-5 h-5"></i></span>
+          <span x-show="tema === 'dark'" x-cloak><i data-lucide="sun" class="w-5 h-5"></i></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 pb-3 flex flex-col sm:flex-row gap-2 sm:items-center">
+      <label class="relative flex-1">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><i data-lucide="search" class="w-4 h-4"></i></span>
+        <input x-model="busqueda" type="search" placeholder="Buscar productos…" aria-label="Buscar productos"
+          class="w-full pl-9 pr-3 py-2 rounded-xl bg-white dark:bg-gray-800 border border-brand-100 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-400 text-sm">
+      </label>
+      <nav class="flex gap-2 overflow-x-auto no-scrollbar" aria-label="Categorías">
+        <template x-for="c in categorias" :key="c">
+          <button @click="categoriaActiva = c" x-text="c"
+            :class="c === categoriaActiva
+              ? 'bg-brand-500 text-white border-brand-500'
+              : 'bg-white dark:bg-gray-800 border-brand-100 dark:border-gray-700'"
+            class="whitespace-nowrap px-3 py-1.5 rounded-full border text-sm font-medium"></button>
+        </template>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== GRID DE PRODUCTOS ===== -->
+  <main class="max-w-7xl mx-auto px-4 py-6 pb-16">
+    <div x-show="error" x-cloak class="rounded-2xl border border-amber-300 bg-amber-50 dark:bg-amber-900/30 p-6 text-center">
+      <p class="font-semibold">No se pudieron cargar los productos.</p>
+      <p class="text-sm mt-1 text-gray-600 dark:text-gray-300">Intenta de nuevo más tarde.</p>
+      <button @click="cargarDatos()" class="mt-3 px-4 py-2 rounded-xl bg-brand-500 text-white text-sm font-bold">Reintentar</button>
+    </div>
+
+    <div x-show="!error" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <template x-for="p in filtrados()" :key="p.id">
+        <article @click="abrirModal(p)" @keydown.enter="abrirModal(p)" tabindex="0"
+          class="group cursor-pointer bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-brand-100 dark:border-gray-800 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition anim-fade-up">
+          <div class="relative">
+            <img :src="p.imagen || IMG_DEFAULT" @error="imgError($event)" :alt="p.nombre" loading="lazy" class="w-full aspect-square object-cover">
+            <span class="absolute top-2 left-2 text-[11px] font-semibold px-2 py-1 rounded-full shadow"
+              :class="p.estado === 'disponible' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'"
+              x-text="estadoTexto(p)"></span>
+          </div>
+          <div class="p-3">
+            <h2 class="font-semibold truncate" x-text="p.nombre"></h2>
+            <p class="text-xs text-gray-500 dark:text-gray-400" x-text="p.categoria"></p>
+            <p class="mt-1 font-bold text-brand-600 dark:text-brand-400" x-text="fmt(p.precio)"></p>
+          </div>
+        </article>
+      </template>
+    </div>
+
+    <p x-show="!error && filtrados().length === 0" x-cloak class="text-center text-gray-500 py-16">No hay productos que coincidan.</p>
+  </main>
+
+  <footer class="border-t border-brand-100 dark:border-gray-800 py-6 text-center text-xs text-gray-500">
+    <p x-text="config.store_name"></p>
+    <p class="mt-1">Pedidos por WhatsApp · Hecho a mano con 💗</p>
+  </footer>
+
+  <!-- ===== MODAL PRODUCTO ===== -->
+  <div x-show="modal" x-cloak class="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4"
+       role="dialog" aria-modal="true" aria-label="Detalle del producto"
+       @keydown.escape.window="cerrarModal()">
+    <div class="absolute inset-0 bg-black/60 anim-fade" @click="cerrarModal()"></div>
+
+    <div x-ref="dialogProd" @keydown.tab="trapFocus($event, $refs.dialogProd)"
+         class="relative bg-white dark:bg-gray-900 w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl shadow-2xl anim-fade-up">
+      <button x-ref="btnCloseProd" @click="cerrarModal()" aria-label="Cerrar detalle"
+        class="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/90 dark:bg-gray-800/90 shadow"><i data-lucide="x" class="w-5 h-5"></i></button>
+
+      <template x-if="sel">
+        <div class="grid sm:grid-cols-2">
+          <img :src="sel.imagen || IMG_DEFAULT" @error="imgError($event)" :alt="sel.nombre" class="w-full aspect-square object-cover">
+          <div class="p-5 space-y-4">
+            <div>
+              <span class="text-[11px] font-semibold px-2 py-1 rounded-full"
+                :class="sel.estado === 'disponible' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'"
+                x-text="estadoTexto(sel)"></span>
+              <h2 class="text-xl font-bold mt-2" x-text="sel.nombre"></h2>
+              <p class="text-sm text-gray-500" x-text="sel.categoria + ' · Stock: ' + sel.stock"></p>
+            </div>
+            <p class="text-sm leading-relaxed" x-text="sel.descripcion"></p>
+
+            <div>
+              <p class="text-sm font-semibold mb-1">Cantidad</p>
+              <div class="flex items-center gap-3">
+                <button @click="cantidad = Math.max(1, cantidad - 1)" aria-label="Disminuir cantidad"
+                  class="p-2 rounded-xl border border-brand-200 dark:border-gray-700"><i data-lucide="minus" class="w-4 h-4"></i></button>
+                <span class="w-8 text-center font-bold" x-text="cantidad"></span>
+                <button @click="cantidad++" aria-label="Aumentar cantidad"
+                  class="p-2 rounded-xl border border-brand-200 dark:border-gray-700"><i data-lucide="plus" class="w-4 h-4"></i></button>
+              </div>
+            </div>
+
+            <div x-show="sel.colores && sel.colores.length">
+              <p class="text-sm font-semibold mb-1">Color</p>
+              <div class="flex flex-wrap gap-2">
+                <template x-for="c in sel.colores" :key="c">
+                  <button @click="colorSel = c" x-text="c"
+                    :class="c === colorSel ? 'bg-brand-500 text-white border-brand-500' : 'bg-white dark:bg-gray-800 border-brand-100 dark:border-gray-700'"
+                    class="px-3 py-1.5 rounded-full border text-sm"></button>
+                </template>
+              </div>
+            </div>
+
+            <div x-show="sel.accesorios && sel.accesorios.length">
+              <p class="text-sm font-semibold mb-1">Accesorios</p>
+              <div class="flex flex-wrap gap-2">
+                <template x-for="a in sel.accesorios" :key="a.nombre">
+                  <button @click="toggleAcc(a.nombre)"
+                    :class="accSel.includes(a.nombre) ? 'bg-brand-500 text-white border-brand-500' : 'bg-white dark:bg-gray-800 border-brand-100 dark:border-gray-700'"
+                    class="px-3 py-1.5 rounded-full border text-sm"
+                    x-text="a.nombre + ' (+' + fmt(a.precio_extra) + ')'"></button>
+                </template>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between rounded-2xl bg-brand-50 dark:bg-gray-800 px-4 py-3">
+              <span class="text-sm font-semibold">Total</span>
+              <span class="text-xl font-extrabold text-brand-600 dark:text-brand-400" x-text="fmt(totalModal())"></span>
+            </div>
+
+            <div class="grid gap-2">
+              <button @click="pedirProducto()"
+                class="flex items-center justify-center gap-2 rounded-2xl bg-green-500 hover:bg-green-600 text-white font-bold py-3">
+                <i data-lucide="message-circle" class="w-5 h-5"></i> Pedir ahora por WhatsApp
+              </button>
+              <div class="grid grid-cols-2 gap-2">
+                <button @click="añadirCarrito()"
+                  class="flex items-center justify-center gap-2 rounded-2xl border-2 border-brand-500 text-brand-600 dark:text-brand-400 font-bold py-2.5">
+                  <i data-lucide="shopping-bag" class="w-4 h-4"></i> Al carrito
+                </button>
+                <button @click="compartir()" aria-label="Compartir producto"
+                  class="flex items-center justify-center gap-2 rounded-2xl border border-brand-200 dark:border-gray-700 font-bold py-2.5">
+                  <i data-lucide="share-2" class="w-4 h-4"></i> Compartir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <!-- ===== MODAL CARRITO ===== -->
+  <div x-show="carritoAbierto" x-cloak class="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4"
+       role="dialog" aria-modal="true" aria-label="Carrito de pedidos"
+       @keydown.escape.window="cerrarCarrito()">
+    <div class="absolute inset-0 bg-black/60 anim-fade" @click="cerrarCarrito()"></div>
+
+    <div x-ref="dialogCart" @keydown.tab="trapFocus($event, $refs.dialogCart)"
+         class="relative bg-white dark:bg-gray-900 w-full sm:max-w-lg max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl p-5 space-y-4 anim-fade-up">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold flex items-center gap-2"><i data-lucide="shopping-bag" class="w-5 h-5 text-brand-500"></i> Tu pedido</h2>
+        <button x-ref="btnCloseCart" @click="cerrarCarrito()" aria-label="Cerrar carrito"
+          class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <div x-show="carrito.length === 0" class="text-center py-10 text-gray-500">
+        <p class="text-3xl mb-2">🧺</p>
+        <p>Tu carrito está vacío.</p>
+      </div>
+
+      <template x-for="(it, idx) in carrito" :key="it.clave">
+        <div class="flex gap-3 rounded-2xl border border-brand-100 dark:border-gray-800 p-3">
+          <img :src="it.imagen" @error="imgError($event)" alt="" class="w-16 h-16 rounded-xl object-cover">
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-sm truncate" x-text="it.nombre"></p>
+            <p class="text-xs text-gray-500" x-text="it.detalle"></p>
+            <div class="flex items-center justify-between mt-1">
+              <span class="text-sm font-bold text-brand-600 dark:text-brand-400" x-text="fmt(it.precioUnit * it.cantidad)"></span>
+              <div class="flex items-center gap-2">
+                <button @click="cambiarCant(idx, -1)" aria-label="Disminuir" class="p-1 rounded border border-brand-200 dark:border-gray-700"><i data-lucide="minus" class="w-3 h-3"></i></button>
+                <span class="text-sm font-bold w-5 text-center" x-text="it.cantidad"></span>
+                <button @click="cambiarCant(idx, 1)" aria-label="Aumentar" class="p-1 rounded border border-brand-200 dark:border-gray-700"><i data-lucide="plus" class="w-3 h-3"></i></button>
+                <button @click="quitar(idx)" aria-label="Eliminar del carrito" class="p-1 text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <div x-show="carrito.length > 0" class="space-y-3">
+        <div class="flex justify-between font-extrabold text-lg">
+          <span>Total</span><span class="text-brand-600 dark:text-brand-400" x-text="fmt(cartTotal())"></span>
+        </div>
+        <button @click="pedirCarrito()"
+          class="w-full flex items-center justify-center gap-2 rounded-2xl bg-green-500 hover:bg-green-600 text-white font-bold py-3">
+          <i data-lucide="send" class="w-5 h-5"></i> Enviar pedido completo por WhatsApp
+        </button>
+        <button @click="vaciarCarrito()" class="w-full text-sm text-red-500 py-1">Vaciar carrito</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div x-show="toast" x-cloak x-transition.opacity
+    class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] bg-gray-900/95 text-white text-sm px-4 py-2 rounded-full shadow-lg"
+    x-text="toast"></div>
+
+</div>
+<script src="js/app.js"></script>
+</body>
+</html>
