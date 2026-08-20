@@ -1,0 +1,70 @@
+media:
+  input: static/images
+  output: /static/images
+
+content:
+  - name: config
+    label: Configuración
+    type: file
+    path: data/config.json
+    fields:
+      - name: whatsapp_number
+        label: Número de WhatsApp (formato internacional)
+        type: string
+      - name: store_name
+        label: Nombre de la tienda
+        type: string
+      - name: mensaje_bienvenida
+        label: Mensaje de bienvenida del pedido
+        type: text
+
+  - name: catalogo
+    label: Productos
+    type: file
+    path: data/productos.json
+    fields:
+      - name: productos
+        label: Productos
+        type: list
+        fields:
+          - name: id
+            label: ID único
+            type: number
+          - name: nombre
+            label: Nombre
+            type: string
+          - name: precio
+            label: Precio base (€)
+            type: number
+          - name: categoria
+            label: Categoría
+            type: string
+          - name: descripcion
+            label: Descripción
+            type: text
+          - name: imagen
+            label: Imagen
+            type: image
+          - name: colores
+            label: Colores disponibles
+            type: list
+            fields:
+              - name: color
+                label: Color
+                type: string
+          - name: accesorios
+            label: Accesorios opcionales
+            type: list
+            fields:
+              - name: nombre
+                label: Nombre del accesorio
+                type: string
+              - name: precio_extra
+                label: Precio extra (€)
+                type: number
+          - name: stock
+            label: Stock (informativo)
+            type: number
+          - name: estado
+            label: Estado (escribe disponible o bajo_pedido)
+            type: string
