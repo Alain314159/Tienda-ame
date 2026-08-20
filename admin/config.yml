@@ -1,0 +1,61 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "static/images"
+public_folder: "/static/images"
+
+collections:
+  - name: "config"
+    label: "Configuración"
+    files:
+      - name: "general"
+        label: "Configuración de la tienda"
+        file: "data/config.json"
+        fields:
+          - name: "whatsapp_number"
+            label: "Número de WhatsApp (formato internacional)"
+            widget: "string"
+            hint: "Ej.: +34600123456 o 34600123456"
+            pattern:
+              - "^[+]?[0-9][0-9 ]{6,18}$"
+              - "Introduce un número válido en formato internacional."
+          - name: "store_name"
+            label: "Nombre de la tienda"
+            widget: "string"
+          - name: "mensaje_bienvenida"
+            label: "Mensaje de bienvenida del pedido"
+            widget: "text"
+
+  - name: "productos"
+    label: "Productos"
+    files:
+      - name: "catalogo"
+        label: "Catálogo"
+        file: "data/productos.json"
+        fields:
+          - name: "productos"
+            label: "Productos"
+            widget: "list"
+            summary: "{{fields.nombre}} — {{fields.precio}}"
+            fields:
+              - { name: "id", label: "ID único", widget: "number", value_type: "int" }
+              - { name: "nombre", label: "Nombre", widget: "string" }
+              - { name: "precio", label: "Precio base (€)", widget: "number", value_type: "float" }
+              - { name: "categoria", label: "Categoría", widget: "string", hint: "Ej.: Amigurumis, Llaveros" }
+              - { name: "descripcion", label: "Descripción", widget: "text" }
+              - { name: "imagen", label: "Imagen", widget: "image" }
+              - name: "colores"
+                label: "Colores disponibles"
+                widget: "list"
+                required: false
+                field: { name: "color", label: "Color", widget: "string" }
+              - name: "accesorios"
+                label: "Accesorios opcionales"
+                widget: "list"
+                required: false
+                fields:
+                  - { name: "nombre", label: "Nombre del accesorio", widget: "string" }
+                  - { name: "precio_extra", label: "Precio extra (€)", widget: "number", value_type: "float", default: 0 }
+              - { name: "stock", label: "Stock (informativo)", widget: "number", value_type: "int", default: 0 }
+              - { name: "estado", label: "Estado", widget: "select", options: ["disponible", "bajo_pedido"], default: "disponible" }
