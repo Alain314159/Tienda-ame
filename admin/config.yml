@@ -1,5 +1,6 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: alain314159/Tienda-ame
   branch: main
 
 media_folder: "static/images"
