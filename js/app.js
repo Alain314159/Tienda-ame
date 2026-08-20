@@ -51,7 +51,11 @@ function tiendaApp() {
         const r = await fetch('data/productos.json', { cache: 'no-cache' });
         if (!r.ok) throw new Error('HTTP ' + r.status);
         const d = await r.json();
-        this.productos = Array.isArray(d.productos) ? d.productos : [];
+        this.productos = (Array.isArray(d.productos) ? d.productos : []).map(p => {
+  p.colores = (p.colores || []).map(c => (typeof c === 'string' ? c : (c.color || ''))).filter(Boolean);
+  p.accesorios = (p.accesorios || []).map(a => ({ nombre: a.nombre, precio_extra: Number(a.precio_extra) || 0 }));
+  return p;
+});
       } catch (e) { console.error('No se pudo cargar productos.json', e); this.error = true; }
       document.title = this.config.store_name;
       this.iconos();
