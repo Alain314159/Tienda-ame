@@ -1,0 +1,14 @@
+[x-cloak] { display: none !important; }
+
+html { -webkit-tap-highlight-color: transparent; }
+body { overscroll-behavior-y: none; }
+button { cursor: pointer; }
+img { -webkit-user-drag: none; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.anim-fade-up { animation: fadeUp .25s ease-out; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.anim-fade { animation: fadeIn .2s ease-out; }
