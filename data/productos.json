@@ -1,45 +1,61 @@
 {
   "productos": [
     {
-      "id": 1,
+      "estado": "disponible",
+      "precio": 14.99,
       "nombre": "Oso Teddy",
-      "precio": 15.99,
-      "categoria": "Amigurumis",
       "descripcion": "Oso tejido a mano con lana hipoalergénica, relleno suave y ojos de seguridad. Aprox. 20 cm.",
-      "imagen": "/static/images/oso.jpg",
-      "colores": ["marrón", "beige", "gris"],
-      "accesorios": [
-        { "nombre": "Lazo rojo", "precio_extra": 1.5 },
-        { "nombre": "Gorro de lana", "precio_extra": 2.0 }
+      "colores": [
+        "marrón",
+        "beige",
+        "gris"
       ],
-      "stock": 5,
-      "estado": "disponible"
-    },
-    {
-      "id": 2,
-      "nombre": "Conejita Nube",
-      "precio": 17.5,
       "categoria": "Amigurumis",
-      "descripcion": "Conejita de crochet en algodón orgánico, ideal para bebés. Aprox. 22 cm.",
-      "imagen": "/static/images/conejo.jpg",
-      "colores": ["crema", "rosa"],
+      "imagen": "/static/images/oso.jpg",
+      "stock": 5,
+      "id": 1,
       "accesorios": [
-        { "nombre": "Zanahoria tejida", "precio_extra": 1.0 }
-      ],
-      "stock": 3,
-      "estado": "disponible"
+        {
+          "nombre": "Lazo rojo",
+          "precio_extra": 1.5
+        },
+        {
+          "nombre": "Gorro de lana",
+          "precio_extra": 2
+        }
+      ]
     },
     {
-      "id": 3,
+      "estado": "disponible",
+      "precio": 17.5,
+      "nombre": "Conejita Nube",
+      "descripcion": "Conejita de crochet en algodón orgánico, ideal para bebés. Aprox. 22 cm.",
+      "colores": [
+        "crema",
+        "rosa"
+      ],
+      "categoria": "Amigurumis",
+      "imagen": "/static/images/conejo.jpg",
+      "stock": 3,
+      "id": 2,
+      "accesorios": [
+        {
+          "nombre": "Zanahoria tejida",
+          "precio_extra": 1
+        }
+      ]
+    },
+    {
+      "estado": "bajo_pedido",
+      "precio": 6,
       "nombre": "Llavero Corazón",
-      "precio": 6.0,
-      "categoria": "Llaveros",
       "descripcion": "Llavero de corazón tejido en degradado rosa con argolla metálica.",
-      "imagen": "/static/images/corazon.jpg",
       "colores": [],
-      "accesorios": [],
+      "categoria": "Llaveros",
+      "imagen": "/static/images/corazon.jpg",
       "stock": 12,
-      "estado": "bajo_pedido"
+      "id": 3,
+      "accesorios": []
     }
   ]
 }
