@@ -41,6 +41,15 @@
       "categoria": "Llaveros",
       "descripcion": "Ggggghhhjk juiiii uiiijj jui",
       "imagen": "/static/images/1000314169.jpg"
+    },
+    {
+      "precio": 369,
+      "estado": "bajo_pedido",
+      "categoria": "Amigurumis",
+      "stock": 0,
+      "id": 1,
+      "nombre": "Hv",
+      "imagen": "static/images/1000318601.jpg"
     }
   ]
 }
