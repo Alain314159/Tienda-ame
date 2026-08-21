@@ -1,18 +1,6 @@
 {
   "productos": [
     {
-      "id": 3,
-      "nombre": "Llavero Corazón",
-      "precio": 6,
-      "categoria": "Llaveros",
-      "descripcion": "Llavero de corazón tejido en degradado rosa con argolla metálica.",
-      "imagen": "static/images/corazon.jpg",
-      "colores": [],
-      "accesorios": [],
-      "stock": 12,
-      "estado": "bajo_pedido"
-    },
-    {
       "id": 33,
       "nombre": "Osa",
       "precio": 500,
