@@ -69,7 +69,7 @@ function tiendaApp() {
 
     /* ---------- utilidades ---------- */
     iconos() { this.$nextTick(() => { if (window.lucide) lucide.createIcons(); }); },
-    fmt(n) { return '€' + (Number(n) || 0).toFixed(2); },
+    fmt(n) { return (this.config.moneda || '') + (Number(n) || 0).toFixed(2); },
     estadoTexto(p) { return p.estado === 'disponible' ? '✅ Listo para enviar' : '🔄 Bajo pedido (7 días)'; },
     imgError(e) { if (e.target.src !== IMG_DEFAULT) e.target.src = IMG_DEFAULT; },
     filtrados() {
