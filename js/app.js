@@ -52,6 +52,7 @@ function tiendaApp() {
         if (!r.ok) throw new Error('HTTP ' + r.status);
         const d = await r.json();
         this.productos = (Array.isArray(d.productos) ? d.productos : []).map(p => {
+        if (typeof p.imagen === 'string' && p.imagen.charAt(0) === '/') p.imagen = p.imagen.slice(1);  
   p.colores = (p.colores || []).map(c => (typeof c === 'string' ? c : (c.color || ''))).filter(Boolean);
   p.accesorios = (p.accesorios || []).map(a => ({ nombre: a.nombre, precio_extra: Number(a.precio_extra) || 0 }));
   return p;
