@@ -1,18 +1,6 @@
 {
   "productos": [
     {
-      "id": 1,
-      "nombre": "Hv",
-      "precio": 369,
-      "categoria": "Amigurumis",
-      "descripcion": "",
-      "imagen": "static/images/1000318601.jpg",
-      "colores": [],
-      "accesorios": [],
-      "stock": 0,
-      "estado": "bajo_pedido"
-    },
-    {
       "id": 34,
       "nombre": "Diente",
       "precio": 800,
