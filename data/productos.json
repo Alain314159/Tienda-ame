@@ -1,18 +1,6 @@
 {
   "productos": [
     {
-      "id": 33,
-      "nombre": "Osa",
-      "precio": 500,
-      "categoria": "Llaveros",
-      "descripcion": "Ggggghhhjk juiiii uiiijj jui",
-      "imagen": "static/images/1000314169.jpg",
-      "colores": [],
-      "accesorios": [],
-      "stock": 3,
-      "estado": "disponible"
-    },
-    {
       "id": 1,
       "nombre": "Hv",
       "precio": 369,
