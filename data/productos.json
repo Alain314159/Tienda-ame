@@ -2,31 +2,6 @@
   "productos": [
     {
       "estado": "disponible",
-      "precio": 14.99,
-      "nombre": "Oso Teddy",
-      "descripcion": "Oso tejido a mano con lana hipoalergénica, relleno suave y ojos de seguridad. Aprox. 20 cm.",
-      "colores": [
-        "marrón",
-        "beige",
-        "gris"
-      ],
-      "categoria": "Amigurumis",
-      "imagen": "/static/images/oso.jpg",
-      "stock": 5,
-      "id": 1,
-      "accesorios": [
-        {
-          "nombre": "Lazo rojo",
-          "precio_extra": 1.5
-        },
-        {
-          "nombre": "Gorro de lana",
-          "precio_extra": 2
-        }
-      ]
-    },
-    {
-      "estado": "disponible",
       "precio": 17.5,
       "nombre": "Conejita Nube",
       "descripcion": "Conejita de crochet en algodón orgánico, ideal para bebés. Aprox. 22 cm.",
