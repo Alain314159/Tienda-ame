@@ -1,55 +1,72 @@
 {
   "productos": [
     {
-      "estado": "disponible",
-      "precio": 17,
+      "id": 2,
       "nombre": "Conejita Nube",
+      "precio": 17,
+      "categoria": "Amigurumis",
       "descripcion": "Conejita de crochet en algodón orgánico, ideal para bebés. Aprox. 22 cm.",
+      "imagen": "static/images/conejo.jpg",
       "colores": [
         "crema",
         "rosa"
       ],
-      "categoria": "Amigurumis",
-      "imagen": "/static/images/conejo.jpg",
-      "stock": 3,
-      "id": 2,
       "accesorios": [
         {
           "nombre": "Zanahoria tejida",
           "precio_extra": 1
         }
-      ]
-    },
-    {
-      "estado": "bajo_pedido",
-      "precio": 6,
-      "nombre": "Llavero Corazón",
-      "descripcion": "Llavero de corazón tejido en degradado rosa con argolla metálica.",
-      "colores": [],
-      "categoria": "Llaveros",
-      "imagen": "/static/images/corazon.jpg",
-      "stock": 12,
-      "id": 3,
-      "accesorios": []
-    },
-    {
+      ],
       "stock": 3,
-      "estado": "disponible",
+      "estado": "disponible"
+    },
+    {
+      "id": 3,
+      "nombre": "Llavero Corazón",
+      "precio": 6,
+      "categoria": "Llaveros",
+      "descripcion": "Llavero de corazón tejido en degradado rosa con argolla metálica.",
+      "imagen": "static/images/corazon.jpg",
+      "colores": [],
+      "accesorios": [],
+      "stock": 12,
+      "estado": "bajo_pedido"
+    },
+    {
       "id": 33,
       "nombre": "Osa",
       "precio": 500,
       "categoria": "Llaveros",
       "descripcion": "Ggggghhhjk juiiii uiiijj jui",
-      "imagen": "/static/images/1000314169.jpg"
+      "imagen": "static/images/1000314169.jpg",
+      "colores": [],
+      "accesorios": [],
+      "stock": 3,
+      "estado": "disponible"
     },
     {
-      "precio": 369,
-      "estado": "bajo_pedido",
-      "categoria": "Amigurumis",
-      "stock": 0,
       "id": 1,
       "nombre": "Hv",
-      "imagen": "static/images/1000318601.jpg"
+      "precio": 369,
+      "categoria": "Amigurumis",
+      "descripcion": "",
+      "imagen": "static/images/1000318601.jpg",
+      "colores": [],
+      "accesorios": [],
+      "stock": 0,
+      "estado": "bajo_pedido"
+    },
+    {
+      "id": 34,
+      "nombre": "Diente",
+      "precio": 800,
+      "categoria": "Amigurumis",
+      "descripcion": "Diente blanco sin caries ",
+      "imagen": "static/images/diente-1787328827942.jpg",
+      "colores": [],
+      "accesorios": [],
+      "stock": 0,
+      "estado": "bajo_pedido"
     }
   ]
 }
