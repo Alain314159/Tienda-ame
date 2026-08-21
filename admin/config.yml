@@ -27,6 +27,11 @@ collections:
           - name: "mensaje_bienvenida"
             label: "Mensaje de bienvenida del pedido"
             widget: "text"
+          - name: "moneda"
+            label: "Símbolo de moneda (ej.: $, Bs., S/)"
+            widget: "string"
+            hint: "Va delante del precio, ej.: $15.99"
+            default: "$"
 
   - name: "productos"
     label: "Productos"
@@ -37,26 +42,38 @@ collections:
         fields:
           - name: "productos"
             label: "Productos"
+            label_singular: "producto"
             widget: "list"
-            summary: "{{fields.nombre}} — {{fields.precio}}"
+            summary: "🧶 {{fields.nombre}} · {{fields.precio}} · {{fields.estado}}"
+            collapsed: true
             fields:
-              - { name: "id", label: "ID único", widget: "number", value_type: "int" }
               - { name: "nombre", label: "Nombre", widget: "string" }
-              - { name: "precio", label: "Precio base (€)", widget: "number", value_type: "float" }
-              - { name: "categoria", label: "Categoría", widget: "string", hint: "Ej.: Amigurumis, Llaveros" }
-              - { name: "descripcion", label: "Descripción", widget: "text" }
-              - { name: "imagen", label: "Imagen", widget: "image" }
+              - { name: "precio", label: "Precio base", widget: "number", value_type: "float", default: 0 }
+              - name: "estado"
+                label: "Estado"
+                widget: "select"
+                options: ["disponible", "bajo_pedido"]
+                default: "disponible"
+              - { name: "categoria", label: "Categoría", widget: "string", hint: "Ej.: Amigurumis, Llaveros, Accesorios", default: "Amigurumis" }
+              - { name: "imagen", label: "Foto del producto", widget: "image", required: false }
+              - { name: "descripcion", label: "Descripción", widget: "text", required: false }
               - name: "colores"
                 label: "Colores disponibles"
+                label_singular: "color"
                 widget: "list"
                 required: false
+                collapsed: true
+                summary: "🎨 {{fields.color}}"
                 field: { name: "color", label: "Color", widget: "string" }
               - name: "accesorios"
                 label: "Accesorios opcionales"
+                label_singular: "accesorio"
                 widget: "list"
                 required: false
+                collapsed: true
+                summary: "🎀 {{fields.nombre}} (+{{fields.precio_extra}})"
                 fields:
                   - { name: "nombre", label: "Nombre del accesorio", widget: "string" }
-                  - { name: "precio_extra", label: "Precio extra (€)", widget: "number", value_type: "float", default: 0 }
+                  - { name: "precio_extra", label: "Precio extra", widget: "number", value_type: "float", default: 0 }
               - { name: "stock", label: "Stock (informativo)", widget: "number", value_type: "int", default: 0 }
-              - { name: "estado", label: "Estado", widget: "select", options: ["disponible", "bajo_pedido"], default: "disponible" }
+              - { name: "id", label: "ID único (un número distinto por producto)", widget: "number", value_type: "int", default: 1 }
