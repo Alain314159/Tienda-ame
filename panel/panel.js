@@ -353,6 +353,14 @@ function panelApp() {
             });
         },
 
+        /** Ruta de imagen correcta vista desde /panel/. */
+        srcImg(img) {
+            if (!img) return '';
+            const s = String(img);
+            if (/^https?:\/\//i.test(s)) return s;
+            return '../' + s.replace(/^\.?\/+/, '');
+        },
+
         /** Reemplaza imagen rota por un placeholder SVG. */
         imgError(ev) {
             if (ev && ev.target) {
