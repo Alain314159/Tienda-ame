@@ -11,6 +11,22 @@
       "accesorios": [],
       "stock": 0,
       "estado": "bajo_pedido"
+    },
+    {
+      "id": 35,
+      "nombre": "Llaveros bouquet 💐",
+      "precio": 900,
+      "categoria": "Amigurumis",
+      "descripcion": "lindos ramitos a crochet de diferentes colores",
+      "imagen": "static/images/llaveros-bouquet-1787510102250.jpg",
+      "colores": [
+        "violeta",
+        "amarillo",
+        "rojo"
+      ],
+      "accesorios": [],
+      "stock": 3,
+      "estado": "disponible"
     }
   ]
 }
