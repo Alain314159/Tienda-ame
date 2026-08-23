@@ -1,18 +1,6 @@
 {
   "productos": [
     {
-      "id": 34,
-      "nombre": "Diente",
-      "precio": 800,
-      "categoria": "Amigurumis",
-      "descripcion": "Diente blanco sin caries ",
-      "imagen": "static/images/diente-1787328827942.jpg",
-      "colores": [],
-      "accesorios": [],
-      "stock": 0,
-      "estado": "bajo_pedido"
-    },
-    {
       "id": 35,
       "nombre": "Llaveros bouquet 💐",
       "precio": 900,
