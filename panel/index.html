@@ -34,6 +34,7 @@
 
     <!-- Lucide icons -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
 
     <style>
         [x-cloak] { display: none !important; }
@@ -650,6 +651,18 @@
                     </span>
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Overlay de publicacion: hilo que se teje con el progreso -->
+    <div x-show="publicando || cargando" x-cloak class="fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm grid place-items-center">
+        <div class="card p-6 w-72 text-center space-y-3">
+            <div id="lottie-tejiendo" class="w-40 h-40 mx-auto"></div>
+            <p class="text-sm font-semibold text-gray-800 dark:text-gray-100" x-text="publicando ? 'Publicando…' : 'Guardando…'"></p>
+            <div class="h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                <div class="h-full bg-brand-500 transition-all" :style="'width:' + progreso + '%'"></div>
+            </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400" x-text="progreso + '%'"></p>
         </div>
     </div>
 
