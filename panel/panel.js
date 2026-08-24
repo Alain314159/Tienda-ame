@@ -41,7 +41,7 @@ function panelApp() {
         toast:        { show: false, mensaje: '', tipo: 'info' },
         modalAbierto: false,
         editando:     null,             // producto en edición (copia)
-        imgNueva:     null,             // dataURL de imagen seleccionada
+        fotos:        [],               // galeria del editor: [{ruta, data}]
         colorNuevo:   '',
         confirmando:  null,             // producto pendiente de borrar
         publicando:   false,
@@ -305,6 +305,9 @@ function panelApp() {
                 categoria:   String(p.categoria  || ''),
                 descripcion: String(p.descripcion || ''),
                 imagen:      this._normalizarImagen(p.imagen),
+                imagenes:    Array.isArray(p.imagenes)
+                                ? p.imagenes.map(x => this._normalizarImagen(x)).filter(Boolean)
+                                : (this._normalizarImagen(p.imagen) ? [this._normalizarImagen(p.imagen)] : []),
                 colores:     Array.isArray(p.colores)
                                 ? p.colores.map(c => String(c))
                                 : [],
@@ -407,7 +410,7 @@ function panelApp() {
                 stock:       0,
                 estado:      'disponible'
             };
-            this.imgNueva    = null;
+            this.fotos       = [];
             this.colorNuevo  = '';
             this.modalAbierto = true;
             this.iconos();
@@ -416,7 +419,7 @@ function panelApp() {
         /** Abre el modal para editar un producto existente (copia). */
         editar(p) {
             this.editando    = this._clonar(p);
-            this.imgNueva    = null;
+            this.fotos       = this._fotosDe(p);
             this.colorNuevo  = '';
             this.modalAbierto = true;
             this.iconos();
@@ -431,7 +434,7 @@ function panelApp() {
             copia.id     = maxId + 1;
             copia.nombre = p.nombre + ' (copia)';
             this.editando    = copia;
-            this.imgNueva    = null;
+            this.fotos       = this._fotosDe(p);
             this.colorNuevo  = '';
             this.modalAbierto = true;
             this.iconos();
@@ -475,7 +478,7 @@ function panelApp() {
         cerrarEditor() {
             this.modalAbierto = false;
             this.editando     = null;
-            this.imgNueva     = null;
+            this.fotos        = [];
             this.colorNuevo   = '';
         },
 
@@ -505,25 +508,42 @@ function panelApp() {
             });
         },
 
-        /** Callback del input file: comprime y guarda dataURL en imgNueva. */
+        /** Callback del input file: comprime varias fotos y las anade a fotos. */
         async onImg(ev) {
-            const file = ev?.target?.files?.[0];
-            if (!file) return;
-            try {
-                const kbOrig = Math.round(file.size / 1024);
-                this.imgNueva = await this.comprimirImagen(file);
-                const kbNew = Math.round(this.imgNueva.length * 3 / 4 / 1024);
-                this.mostrarToast('Imagen: ' + kbOrig + ' KB -> ' + kbNew + ' KB', 'success');
-                this.iconos();
-            } catch (e) {
-                this.mostrarToast('No se pudo procesar la imagen', 'error');
+            const files = Array.from(ev?.target?.files || []);
+            if (!files.length) return;
+            for (const file of files) {
+                try {
+                    const kbOrig = Math.round(file.size / 1024);
+                    const data = await this.comprimirImagen(file);
+                    const kbNew = Math.round(data.length * 3 / 4 / 1024);
+                    this.fotos.push({ ruta: null, data: data });
+                    this.mostrarToast('Imagen: ' + kbOrig + ' KB -> ' + kbNew + ' KB', 'success');
+                } catch (e) {
+                    this.mostrarToast('No se pudo procesar una imagen', 'error');
+                }
             }
+            ev.target.value = '';
+            this.iconos();
         },
 
-        /** Sube imgNueva al repo como static/images/<slug>-<ts>.jpg. */
-        async _subirImagenNueva(nombreProducto) {
+        /** Quita la foto i de la galeria del editor. */
+        quitarFoto(i) { this.fotos.splice(i, 1); this.iconos(); },
+
+        /** Hace principal la foto i. */
+        principal(i) { this.fotos.unshift(this.fotos.splice(i, 1)[0]); this.iconos(); },
+
+        /** Convierte un producto en lista de fotos del editor. */
+        _fotosDe(p) {
+            const arr = Array.isArray(p.imagenes) && p.imagenes.length
+                ? p.imagenes : (p.imagen ? [p.imagen] : []);
+            return arr.map(r => ({ ruta: r, data: null }));
+        },
+
+        /** Sube un dataURL al repo como static/images/<slug>-<ts>.webp. */
+        async _subirDataUrl(dataUrl, nombreProducto) {
             // Extraer la parte base64 (tras la coma del dataURL)
-            const [, base64Data] = this.imgNueva.split(',');
+            const [, base64Data] = dataUrl.split(',');
             const timestamp = Date.now();
             const slug = String(nombreProducto || 'producto')
                 .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -589,12 +609,12 @@ function panelApp() {
             this.publicando = true;
 
             try {
-                // 1) Si hay imagen nueva, subirla primero
-                if (this.imgNueva) {
-                    const ruta = await this._subirImagenNueva(this.editando.nombre);
-                    this.editando.imagen = ruta; // sin "/" inicial
-                    this.imgNueva = null;
+                // 1) Subir fotos nuevas y consolidar la galeria
+                for (const f of this.fotos) {
+                    if (f.data) { f.ruta = await this._subirDataUrl(f.data, this.editando.nombre); f.data = null; }
                 }
+                this.editando.imagenes = this.fotos.map(f => f.ruta).filter(Boolean);
+                this.editando.imagen = this.editando.imagenes[0] || '';
 
                 // 2) Asegurar arrays y números antes de guardar
                 this.editando.colores    = Array.isArray(this.editando.colores)    ? this.editando.colores    : [];
