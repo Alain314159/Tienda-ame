@@ -24,6 +24,8 @@ function tiendaApp() {
 
     modal: false,
     sel: null,
+    fotos: [],
+    fotoIdx: 0,
     cantidad: 1,
     colorSel: '',
     accSel: [],
@@ -97,6 +99,8 @@ function tiendaApp() {
     /* ---------- modal producto ---------- */
     abrirModal(p) {
       this.sel = p;
+      this.fotos = (Array.isArray(p.imagenes) && p.imagenes.length) ? p.imagenes : (p.imagen ? [p.imagen] : [IMG_DEFAULT]);
+      this.fotoIdx = 0;
       this.cantidad = 1;
       this.colorSel = (p.colores && p.colores[0]) || '';
       this.accSel = [];
