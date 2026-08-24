@@ -120,7 +120,15 @@
 
       <template x-if="sel">
         <div class="grid sm:grid-cols-2">
-          <img :src="sel.imagen || IMG_DEFAULT" @error="imgError($event)" :alt="sel.nombre" class="w-full aspect-square object-cover">
+          <img :src="fotos[fotoIdx] || IMG_DEFAULT" @error="imgError($event)" :alt="sel.nombre" class="w-full aspect-square object-cover">
+                <div class="flex gap-2 mt-3 overflow-x-auto pb-1" x-show="fotos.length > 1">
+                  <template x-for="(f, i2) in fotos" :key="i2">
+                    <button @click="fotoIdx = i2" class="w-14 h-14 rounded-lg overflow-hidden shrink-0 border-2"
+                            :class="fotoIdx === i2 ? 'border-brand-500' : 'border-transparent'">
+                      <img :src="f" class="w-full h-full object-cover">
+                    </button>
+                  </template>
+                </div>
           <div class="p-5 space-y-4">
             <div>
               <span class="text-[11px] font-semibold px-2 py-1 rounded-full"
