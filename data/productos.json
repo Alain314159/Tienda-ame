@@ -7,6 +7,9 @@
       "categoria": "Amigurumis",
       "descripcion": "lindos ramitos a crochet de diferentes colores",
       "imagen": "static/images/llaveros-bouquet-1787510102250.jpg",
+      "imagenes": [
+        "static/images/llaveros-bouquet-1787510102250.jpg"
+      ],
       "colores": [
         "violeta",
         "amarillo",
@@ -15,6 +18,22 @@
       "accesorios": [],
       "stock": 3,
       "estado": "disponible"
+    },
+    {
+      "id": 36,
+      "nombre": "E",
+      "precio": 0,
+      "categoria": "Amigurumis",
+      "descripcion": "",
+      "imagen": "static/images/e-1787607562873.webp",
+      "colores": [],
+      "accesorios": [],
+      "stock": 0,
+      "estado": "disponible",
+      "imagenes": [
+        "static/images/e-1787607562873.webp",
+        "static/images/e-1787607582598.webp"
+      ]
     }
   ]
 }
