@@ -481,16 +481,43 @@ function panelApp() {
 
         /* ---------- Gestión de imagen en el editor ---------- */
 
-        /** Callback del input file: guarda dataURL en imgNueva. */
-        onImg(ev) {
+        /** Comprime imagen a WebP (max 1200px, calidad 0.8) antes de subir. */
+        async comprimirImagen(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const MAX = 1200;
+                        const esc = Math.min(1, MAX / Math.max(img.width, img.height));
+                        const w = Math.round(img.width * esc);
+                        const h = Math.round(img.height * esc);
+                        const c = document.createElement('canvas');
+                        c.width = w; c.height = h;
+                        c.getContext('2d').drawImage(img, 0, 0, w, h);
+                        resolve(c.toDataURL('image/webp', 0.8));
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        },
+
+        /** Callback del input file: comprime y guarda dataURL en imgNueva. */
+        async onImg(ev) {
             const file = ev?.target?.files?.[0];
             if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                this.imgNueva = e.target.result;
+            try {
+                const kbOrig = Math.round(file.size / 1024);
+                this.imgNueva = await this.comprimirImagen(file);
+                const kbNew = Math.round(this.imgNueva.length * 3 / 4 / 1024);
+                this.mostrarToast('Imagen: ' + kbOrig + ' KB -> ' + kbNew + ' KB', 'success');
                 this.iconos();
-            };
-            reader.readAsDataURL(file);
+            } catch (e) {
+                this.mostrarToast('No se pudo procesar la imagen', 'error');
+            }
         },
 
         /** Sube imgNueva al repo como static/images/<slug>-<ts>.jpg. */
@@ -504,7 +531,7 @@ function panelApp() {
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/^-+|-+$/g, '')
                 .slice(0, 40) || 'producto';
-            const rutaImagen = `static/images/${slug}-${timestamp}.jpg`;
+            const rutaImagen = `static/images/${slug}-${timestamp}.webp`;
 
             // Para imágenes subimos el binario codificado directamente en base64
             const res = await fetch(`${API_BASE}/contents/${rutaImagen}`, {
