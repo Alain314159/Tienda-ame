@@ -12,24 +12,7 @@ const REPO_NAME   = 'Tienda-ame';
 const REPO_BRANCH = 'main';
 const API_BASE    = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`;
 
-const LOTTIE_TEJIENDO = {"v":"5.7.4","fr":60,"ip":0,"op":120,"w":200,"h":200,"ddd":0,"assets":[],"layers":[
-{"ddd":0,"ind":1,"ty":4,"nm":"puntadas","sr":1,"ao":0,"bm":0,"st":0,"ip":0,"op":120,
-"ks":{"o":{"a":0,"k":100},"r":{"a":0,"k":0},"p":{"a":0,"k":[100,90,0]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},
-"shapes":[{"ty":"gr","nm":"g","it":[
-{"ty":"sh","d":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]],"o":[[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]],"v":[[-70,30],[-42,-15],[-14,30],[14,-15],[42,30],[70,-15]],"c":false}}},
-{"ty":"st","c":{"a":0,"k":[0.925,0.282,0.6,1]},"o":{"a":0,"k":100},"w":{"a":0,"k":10},"lc":2,"lj":2},
-{"ty":"tm","s":{"a":0,"k":0},"e":{"a":1,"k":[{"t":0,"s":[0],"i":{"x":[0.4],"y":[1]},"o":{"x":[0.6],"y":[0]}},{"t":120,"s":[100]}]},"o":{"a":0,"k":0},"m":1},
-{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0}}
-]}]},
-{"ddd":0,"ind":2,"ty":4,"nm":"ovillo","sr":1,"ao":0,"bm":0,"st":0,"ip":0,"op":120,
-"ks":{"o":{"a":0,"k":100},"r":{"a":0,"k":0},"p":{"a":0,"k":[100,150,0]},"a":{"a":0,"k":[0,0,0]},
-"s":{"a":1,"k":[{"t":80,"s":[0,0,100],"i":{"x":[0.4,0.4,0.4],"y":[1,1,1]},"o":{"x":[0.6,0.6,0.6],"y":[0,0,0]}},{"t":110,"s":[100,100,100]}]}},
-"shapes":[{"ty":"gr","nm":"g2","it":[
-{"ty":"el","s":{"a":0,"k":[56,56]},"p":{"a":0,"k":[0,0]}},
-{"ty":"fl","c":{"a":0,"k":[0.976,0.659,0.831,1]},"o":{"a":0,"k":100}},
-{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0}}
-]}]}
-]};
+
 
 /**
  * Componente principal de Alpine.js.
@@ -65,7 +48,6 @@ function panelApp() {
         confirmando:  null,             // producto pendiente de borrar
         publicando:   false,
         progreso:     0,
-        _anim:        null,
         ajustes:      {},               // copia editable del config
         // Para rastrear SHA de archivos ya leídos (evita doble GET al escribir)
         _shas: { config: null, productos: null },
@@ -94,8 +76,8 @@ function panelApp() {
                 document.documentElement.classList.add('dark');
             }
             this.iconos();
-            this.$watch('publicando', v => { if (v) { this.progreso = 0; this.asegurarAnim(); } });
-            this.$watch('cargando', v => { if (v) { this.progreso = 0; this.asegurarAnim(); } });
+            this.$watch('publicando', v => { if (v) { this.progreso = 0; this.asegurarAnim(); } else this.pararProgreso(); });
+            this.$watch('cargando', v => { if (v) { this.progreso = 0; this.asegurarAnim(); } else this.pararProgreso(); });
 
             // Si ya hay token guardado, intentamos entrar silenciosamente
             if (this.token) {
@@ -285,12 +267,12 @@ function panelApp() {
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.upload.onprogress = (e) => {
                     if (e.lengthComputable) {
-                        this.progreso = Math.round(e.loaded / e.total * 100);
-                        this.scrub();
+                        const p = Math.round(e.loaded / e.total * 100);
+                        if (p > this.progreso) this.progreso = p;
                     }
                 };
                 xhr.onload = () => {
-                    if (xhr.status < 300) { this.progreso = 100; this.scrub(); resolve(JSON.parse(xhr.responseText || '{}')); }
+                    if (xhr.status < 300) { this.progreso = 100; resolve(JSON.parse(xhr.responseText || '{}')); }
                     else reject(new Error('PUT ' + ruta + ' -> ' + xhr.status));
                 };
                 xhr.onerror = () => reject(new Error('Sin conexion'));
@@ -298,23 +280,17 @@ function panelApp() {
             });
         },
 
-        /** Avanza la animacion Lottie segun el progreso. */
-        scrub() {
-            if (this._anim && this._anim.totalFrames) {
-                this._anim.goToAndStop(Math.round(this.progreso / 100 * (this._anim.totalFrames - 1)), true);
-            }
+        /** Sube el progreso de forma suave mientras dura la operacion. */
+        asegurarAnim() {
+            this.pararProgreso();
+            this._timer = setInterval(() => {
+                if (this.progreso < 90) this.progreso += (this.progreso < 60 ? 2 : 1);
+            }, 250);
         },
 
-        /** Carga la animacion Lottie la primera vez que se muestra el overlay. */
-        asegurarAnim() {
-            this.$nextTick(() => {
-                if (this._anim || !window.lottie) return;
-                const el = document.getElementById('lottie-tejiendo');
-                if (!el) return;
-                try {
-                    this._anim = lottie.loadAnimation({ container: el, renderer: 'svg', loop: false, autoplay: false, animationData: LOTTIE_TEJIENDO });
-                } catch (e) { this._anim = null; }
-            });
+        /** Detiene el temporizador del progreso. */
+        pararProgreso() {
+            if (this._timer) { clearInterval(this._timer); this._timer = null; }
         },
 
         /* ---------- Normalización ---------- */
