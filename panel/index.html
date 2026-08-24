@@ -534,29 +534,22 @@
 
                 <!-- Imagen -->
                 <div>
-                    <label class="lbl">Imagen</label>
-                    <div class="flex items-start gap-4">
-                        <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 shrink-0">
-                            <template x-if="imgNueva || editando.imagen">
-                                <img :src="imgNueva || srcImg(editando.imagen)"
-                                     class="w-full h-full object-cover"
-                                     @error="imgError($event)">
-                            </template>
-                            <template x-if="!imgNueva && !editando.imagen">
-                                <div class="w-full h-full flex items-center justify-center text-gray-400">
-                                    <i data-lucide="image" style="width:48px;height:48px;"></i>
+                    <label class="lbl">Fotos (la primera es la principal)</label>
+                    <div class="grid grid-cols-3 gap-2 mb-3" x-show="fotos.length">
+                        <template x-for="(f, i) in fotos" :key="i">
+                            <div class="relative aspect-square rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700">
+                                <img :src="f.data || srcImg(f.ruta)" class="w-full h-full object-cover" @error="imgError($event)">
+                                <span x-show="i === 0" class="absolute top-1 left-1 bg-brand-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">Principal</span>
+                                <div class="absolute bottom-0 inset-x-0 flex justify-between bg-black/40">
+                                    <button type="button" @click="principal(i)" class="text-yellow-300 text-sm p-1.5" title="Hacer principal">★</button>
+                                    <button type="button" @click="quitarFoto(i)" class="text-red-300 text-sm p-1.5" title="Quitar">✕</button>
                                 </div>
-                            </template>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <input type="file"
-                                   accept="image/*"
-                                   @change="onImg($event)"
-                                   class="block w-full text-sm text-gray-600 dark:text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 dark:file:bg-brand-900/40 dark:file:text-brand-300">
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2" x-show="editando.imagen && !imgNueva" x-text="editando.imagen"></p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2" x-show="!editando.imagen && !imgNueva">Se subirá a GitHub al publicar.</p>
-                        </div>
+                            </div>
+                        </template>
                     </div>
+                    <input type="file" accept="image/*" multiple @change="onImg($event)"
+                           class="block w-full text-sm text-gray-600 dark:text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 dark:file:bg-brand-900/40 dark:file:text-brand-300">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Puedes elegir varias fotos a la vez. ★ hace principal, ✕ quita.</p>
                 </div>
 
                 <!-- Colores -->
